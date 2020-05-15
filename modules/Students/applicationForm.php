@@ -191,6 +191,9 @@ if ($proceed == false) {
             $row->addContent($linkedApplicationText);
     }
 
+    $resultFields = getCustomFields($connection2, $guid, true, false, false, false, true, null);
+    $customFields = $resultFields->fetchAll(PDO::FETCH_UNIQUE);
+
     // STUDENT PERSONAL DATA
     $form->addRow()->addHeading(__('Student'));
     $form->addRow()->addSubheading(__('Student Personal Data'));
@@ -203,17 +206,27 @@ if ($proceed == false) {
         $row->addLabel('firstName', __('First Name'))->description(__('First name as shown in ID documents.'));
         $row->addTextField('firstName')->required()->maxLength(60);
 
+    // $row = $form->addRow();
+    //     $row->addLabel('officialName', __('Official Name'))->description(__('Full name as shown in ID documents.'));
+    //     $row->addTextField('officialName')->required()->maxLength(150)->setTitle('Please enter full name as shown in ID documents');
+    $form->addHiddenValue('officialName', 'N/A');
+
+    // CUSTOM FIELD: Middle Name
+    $customFieldObject = $customFields['001'];
+    if (!empty($customFieldObject)) {
+        $name = 'custom'.$customFieldObject['gibbonPersonFieldID'];
+        $row = $form->addRow();
+            $row->addLabel($name, $customFieldObject['name'])->description($customFieldObject['description']);
+            $row->addCustomField($name, $customFieldObject);
+    }
+
     $row = $form->addRow();
         $row->addLabel('preferredName', __('Preferred Name'))->description(__('Most common name, alias, nickname, etc.'));
         $row->addTextField('preferredName')->required()->maxLength(60);
 
-    $row = $form->addRow();
-        $row->addLabel('officialName', __('Official Name'))->description(__('Full name as shown in ID documents.'));
-        $row->addTextField('officialName')->required()->maxLength(150)->setTitle('Please enter full name as shown in ID documents');
-
-    $row = $form->addRow();
-        $row->addLabel('nameInCharacters', __('Name In Characters'))->description(__('Chinese or other character-based name.'));
-        $row->addTextField('nameInCharacters')->maxLength(60);
+    // $row = $form->addRow();
+    //     $row->addLabel('nameInCharacters', __('Name In Characters'))->description(__('Chinese or other character-based name.'));
+    //     $row->addTextField('nameInCharacters')->maxLength(60);
 
     $row = $form->addRow();
         $row->addLabel('gender', __('Gender'));
@@ -246,6 +259,15 @@ if ($proceed == false) {
         $row->addLabel('languageThird', __('Third Language'));
         $row->addSelectLanguage('languageThird')->placeholder('');
 
+    // CUSTOM FIELD: City of Birth
+    $customFieldObject = $customFields['003'];
+    if (!empty($customFieldObject)) {
+        $name = 'custom'.$customFieldObject['gibbonPersonFieldID'];
+        $row = $form->addRow();
+            $row->addLabel($name, $customFieldObject['name'])->description($customFieldObject['description']);
+            $row->addCustomField($name, $customFieldObject);
+    }
+
     $row = $form->addRow();
         $row->addLabel('countryOfBirth', __('Country of Birth'));
         $row->addSelectCountry('countryOfBirth')->required();
@@ -259,31 +281,31 @@ if ($proceed == false) {
             $row->addSelectCountry('citizenship1')->required();
         }
 
-    $countryName = (isset($_SESSION[$guid]['country']))? $_SESSION[$guid]['country'].' ' : '';
-    $row = $form->addRow();
-        $row->addLabel('citizenship1Passport', __('Citizenship Passport Number'))->description('');
-        $row->addTextField('citizenship1Passport')->maxLength(30);
+    // $countryName = (isset($_SESSION[$guid]['country']))? $_SESSION[$guid]['country'].' ' : '';
+    // $row = $form->addRow();
+    //     $row->addLabel('citizenship1Passport', __('Citizenship Passport Number'))->description('');
+    //     $row->addTextField('citizenship1Passport')->maxLength(30);
 
-    $row = $form->addRow();
-        $row->addLabel('citizenship1PassportExpiry', __('Citizenship 1 Passport Expiry Date'));
-        $row->addDate('citizenship1PassportExpiry');
+    // $row = $form->addRow();
+    //     $row->addLabel('citizenship1PassportExpiry', __('Citizenship 1 Passport Expiry Date'));
+    //     $row->addDate('citizenship1PassportExpiry');
 
-    $row = $form->addRow();
-        $row->addLabel('nationalIDCardNumber', $countryName.__('National ID Card Number'));
-        $row->addTextField('nationalIDCardNumber')->maxLength(30);
+    // $row = $form->addRow();
+    //     $row->addLabel('nationalIDCardNumber', $countryName.__('National ID Card Number'));
+    //     $row->addTextField('nationalIDCardNumber')->maxLength(30);
 
-    $row = $form->addRow();
-        $row->addLabel('residencyStatus', $countryName.__('Residency/Visa Type'));
-        $residencyStatusList = getSettingByScope($connection2, 'User Admin', 'residencyStatus');
-        if (!empty($residencyStatusList)) {
-            $row->addSelect('residencyStatus')->fromString($residencyStatusList)->placeholder();
-        } else {
-            $row->addTextField('residencyStatus')->maxLength(30);
-        }
+    // $row = $form->addRow();
+    //     $row->addLabel('residencyStatus', $countryName.__('Residency/Visa Type'));
+    //     $residencyStatusList = getSettingByScope($connection2, 'User Admin', 'residencyStatus');
+    //     if (!empty($residencyStatusList)) {
+    //         $row->addSelect('residencyStatus')->fromString($residencyStatusList)->placeholder();
+    //     } else {
+    //         $row->addTextField('residencyStatus')->maxLength(30);
+    //     }
 
-    $row = $form->addRow();
-        $row->addLabel('visaExpiryDate', $countryName.__('Visa Expiry Date'))->description($_SESSION[$guid]['i18n']['dateFormat'])->prepend(__('Format:'))->append(__('If relevant.'));
-        $row->addDate('visaExpiryDate');
+    // $row = $form->addRow();
+    //     $row->addLabel('visaExpiryDate', $countryName.__('Visa Expiry Date'))->description($_SESSION[$guid]['i18n']['dateFormat'])->prepend(__('Format:'))->append(__('If relevant.'));
+    //     $row->addDate('visaExpiryDate');
 
     // STUDENT CONTACT
     $form->addRow()->addSubheading(__('Student Contact'));
@@ -298,7 +320,7 @@ if ($proceed == false) {
     for ($i = 1; $i < 3; ++$i) {
         $row = $form->addRow();
             $row->addLabel('', __('Phone').' '.$i)->description(__('Type, country code, number.'));
-            $row->addPhoneNumber('phone'.$i);
+            $row->addPhoneNumber('phone'.$i)->setRequired($i == 1);
     }
 
     // SPECIAL EDUCATION & MEDICAL
@@ -336,6 +358,17 @@ if ($proceed == false) {
     // STUDENT EDUCATION
     $heading = $form->addRow()->addSubheading(__('Student Education'));
 
+    // CUSTOM FIELD: Student Type
+    $studentTypeFieldObject = $customFields['002'];
+    if (!empty($studentTypeFieldObject)) {
+        $name = 'custom'.$studentTypeFieldObject['gibbonPersonFieldID'];
+        $row = $form->addRow();
+            $row->addLabel($name, $studentTypeFieldObject['name'])->description($studentTypeFieldObject['description']);
+            $row->addCustomField($name, $studentTypeFieldObject);
+        
+        $form->toggleVisibilityByClass('studentTypeVisibility')->onSelect($name)->when(__('New Student/Transferee'));
+    }
+
     $row = $form->addRow();
         $row->addLabel('gibbonSchoolYearIDEntry', __('Anticipated Year of Entry'))->description(__('What school year will the student join in?'));
 
@@ -350,9 +383,10 @@ if ($proceed == false) {
         }
         $row->addSelect('gibbonSchoolYearIDEntry')->fromQuery($pdo, $sql, $data)->required()->placeholder(__('Please select...'));
 
-    $row = $form->addRow();
-        $row->addLabel('dateStart', __('Intended Start Date'))->description(__('Student\'s intended first day at school.'))->append('<br/>'.__('Format:'))->append(' '.$_SESSION[$guid]['i18n']['dateFormat']);
-        $row->addDate('dateStart')->required();
+    // $row = $form->addRow();
+    //     $row->addLabel('dateStart', __('Intended Start Date'))->description(__('Student\'s intended first day at school.'))->append('<br/>'.__('Format:'))->append(' '.$_SESSION[$guid]['i18n']['dateFormat']);
+    //     $row->addDate('dateStart')->required();
+    $form->addHiddenValue('dateStart', '08/24/2020');
 
     $row = $form->addRow();
         $row->addLabel('gibbonYearGroupIDEntry', __('Year Group at Entry'))->description('Which year level will student enter.');
@@ -401,18 +435,18 @@ if ($proceed == false) {
         $row->addDate('schoolDate'.$i)->setSize(10);
     }
 
-    // CUSTOM FIELDS FOR STUDENT
-    $resultFields = getCustomFields($connection2, $guid, true, false, false, false, true, null);
-    if ($resultFields->rowCount() > 0) {
-        $heading = $form->addRow()->addSubheading(__('Other Information'));
+    // // CUSTOM FIELDS FOR STUDENT
+    // $resultFields = getCustomFields($connection2, $guid, true, false, false, false, true, null);
+    // if ($resultFields->rowCount() > 0) {
+    //     $heading = $form->addRow()->addSubheading(__('Other Information'));
 
-        while ($rowFields = $resultFields->fetch()) {
-            $name = 'custom'.$rowFields['gibbonPersonFieldID'];
-            $row = $form->addRow();
-                $row->addLabel($name, $rowFields['name'])->description($rowFields['description']);
-                $row->addCustomField($name, $rowFields);
-        }
-    }
+    //     while ($rowFields = $resultFields->fetch()) {
+    //         $name = 'custom'.$rowFields['gibbonPersonFieldID'];
+    //         $row = $form->addRow();
+    //             $row->addLabel($name, $rowFields['name'])->description($rowFields['description']);
+    //             $row->addCustomField($name, $rowFields);
+    //     }
+    // }
 
     // FAMILY
     if (!empty($gibbonFamilyID)) {
@@ -518,6 +552,9 @@ if ($proceed == false) {
 
         // PARENTS
         for ($i = $start;$i < 3;++$i) {
+            $resultFields = getCustomFields($connection2, $guid, false, false, true, false, true, null);
+            $customFields = $resultFields->fetchAll(PDO::FETCH_UNIQUE);
+
             $subheading = '';
             if ($i == 1) {
                 $subheading = '<span style="font-size: 75%">'.__('(e.g. mother)').'</span>';
@@ -549,17 +586,28 @@ if ($proceed == false) {
                 $row->addLabel("parent{$i}firstName", __('First Name'))->description(__('First name as shown in ID documents.'));
                 $row->addTextField("parent{$i}firstName")->required()->maxLength(30)->loadFrom($application);
 
+            // CUSTOM FIELD: Middle name (for parents)
+            $customFieldObject = $customFields['001'];
+            if (!empty($customFieldObject)) {
+                $name = "parent{$i}custom".$customFieldObject['gibbonPersonFieldID'];
+                $value = (isset($existingFields[$customFieldObject['gibbonPersonFieldID']]))? $existingFields[$customFieldObject['gibbonPersonFieldID']] : '';
+                $row = $form->addRow()->setClass("parentSection{$i}");
+                    $row->addLabel($name, $customFieldObject['name'])->description($customFieldObject['description']);
+                    $row->addCustomField($name, $customFieldObject)->setValue($value);
+            }
+
             $row = $form->addRow()->setClass("parentSection{$i}");
                 $row->addLabel("parent{$i}preferredName", __('Preferred Name'))->description(__('Most common name, alias, nickname, etc.'));
                 $row->addTextField("parent{$i}preferredName")->required()->maxLength(30)->loadFrom($application);
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}officialName", __('Official Name'))->description(__('Full name as shown in ID documents.'));
-                $row->addTextField("parent{$i}officialName")->required()->maxLength(150)->loadFrom($application);
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}officialName", __('Official Name'))->description(__('Full name as shown in ID documents.'));
+            //     $row->addTextField("parent{$i}officialName")->required()->maxLength(150)->loadFrom($application);
+            $form->addHiddenValue('parent{$i}officialName', 'N/A');
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}nameInCharacters", __('Name In Characters'))->description(__('Chinese or other character-based name.'));
-                $row->addTextField("parent{$i}nameInCharacters")->maxLength(20)->loadFrom($application);
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}nameInCharacters", __('Name In Characters'))->description(__('Chinese or other character-based name.'));
+            //     $row->addTextField("parent{$i}nameInCharacters")->maxLength(20)->loadFrom($application);
 
             $row = $form->addRow()->setClass("parentSection{$i}");
                 $row->addLabel("parent{$i}gender", __('Gender'));
@@ -569,41 +617,41 @@ if ($proceed == false) {
                 $row->addLabel("parent{$i}relationship", __('Relationship'));
                 $row->addSelectRelationship("parent{$i}relationship")->required();
 
-            // PARENT PERSONAL BACKGROUND
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addSubheading(__('Parent/Guardian')." $i ".__('Personal Background'));
+            // // PARENT PERSONAL BACKGROUND
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addSubheading(__('Parent/Guardian')." $i ".__('Personal Background'));
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}languageFirst", __('First Language'));
-                $row->addSelectLanguage("parent{$i}languageFirst")->placeholder()->loadFrom($application);
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}languageFirst", __('First Language'));
+            //     $row->addSelectLanguage("parent{$i}languageFirst")->placeholder()->loadFrom($application);
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}languageSecond", __('Second Language'));
-                $row->addSelectLanguage("parent{$i}languageSecond")->placeholder()->loadFrom($application);
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}languageSecond", __('Second Language'));
+            //     $row->addSelectLanguage("parent{$i}languageSecond")->placeholder()->loadFrom($application);
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}citizenship1", __('Citizenship'));
-                if (!empty($nationalityList)) {
-                    $row->addSelect("parent{$i}citizenship1")->fromString($nationalityList)->placeholder()->loadFrom($application);
-                } else {
-                    $row->addSelectCountry("parent{$i}citizenship1")->loadFrom($application);
-                }
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}citizenship1", __('Citizenship'));
+            //     if (!empty($nationalityList)) {
+            //         $row->addSelect("parent{$i}citizenship1")->fromString($nationalityList)->placeholder()->loadFrom($application);
+            //     } else {
+            //         $row->addSelectCountry("parent{$i}citizenship1")->loadFrom($application);
+            //     }
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}nationalIDCardNumber", $countryName.__('National ID Card Number'));
-                $row->addTextField("parent{$i}nationalIDCardNumber")->maxLength(30)->loadFrom($application);
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}nationalIDCardNumber", $countryName.__('National ID Card Number'));
+            //     $row->addTextField("parent{$i}nationalIDCardNumber")->maxLength(30)->loadFrom($application);
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}residencyStatus", $countryName.__('Residency/Visa Type'));
-                if (!empty($residencyStatusList)) {
-                    $row->addSelect("parent{$i}residencyStatus")->fromString($residencyStatusList)->placeholder()->loadFrom($application);
-                } else {
-                    $row->addTextField("parent{$i}residencyStatus")->maxLength(30)->loadFrom($application);
-                }
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}residencyStatus", $countryName.__('Residency/Visa Type'));
+            //     if (!empty($residencyStatusList)) {
+            //         $row->addSelect("parent{$i}residencyStatus")->fromString($residencyStatusList)->placeholder()->loadFrom($application);
+            //     } else {
+            //         $row->addTextField("parent{$i}residencyStatus")->maxLength(30)->loadFrom($application);
+            //     }
 
-            $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addLabel("parent{$i}visaExpiryDate", $countryName.__('Visa Expiry Date'))->description($_SESSION[$guid]['i18n']['dateFormat'])->prepend(__('Format:'))->append(__('If relevant.'));
-                $row->addDate("parent{$i}visaExpiryDate")->loadFrom($application);
+            // $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addLabel("parent{$i}visaExpiryDate", $countryName.__('Visa Expiry Date'))->description($_SESSION[$guid]['i18n']['dateFormat'])->prepend(__('Format:'))->append(__('If relevant.'));
+            //     $row->addDate("parent{$i}visaExpiryDate")->loadFrom($application);
 
             // PARENT CONTACT
             $row = $form->addRow()->setClass("parentSection{$i}");
@@ -628,28 +676,28 @@ if ($proceed == false) {
 
             $row = $form->addRow()->setClass("parentSection{$i}");
                 $row->addLabel("parent{$i}profession", __('Profession'));
-                $row->addTextField("parent{$i}profession")->required($i == 1)->maxLength(90)->loadFrom($application);
+                $row->addTextField("parent{$i}profession")->required($i <= 2)->maxLength(90)->loadFrom($application);
 
             $row = $form->addRow()->setClass("parentSection{$i}");
                 $row->addLabel("parent{$i}employer", __('Employer'));
-                $row->addTextField("parent{$i}employer")->maxLength(90)->loadFrom($application);
+                $row->addTextField("parent{$i}employer")->required($i <= 2)->maxLength(90)->loadFrom($application);
 
-            // CUSTOM FIELDS FOR PARENTS
-            $existingFields = (isset($application["parent{$i}fields"]))? unserialize($application["parent{$i}fields"]) : null;
-            $resultFields = getCustomFields($connection2, $guid, false, false, true, false, true, null);
-            if ($resultFields->rowCount() > 0) {
-                $row = $form->addRow()->setClass("parentSection{$i}");
-                $row->addSubheading(__('Parent/Guardian')." $i ".__('Other Information'));
+            // // CUSTOM FIELDS FOR PARENTS
+            // $existingFields = (isset($application["parent{$i}fields"]))? unserialize($application["parent{$i}fields"]) : null;
+            // $resultFields = getCustomFields($connection2, $guid, false, false, true, false, true, null);
+            // if ($resultFields->rowCount() > 0) {
+            //     $row = $form->addRow()->setClass("parentSection{$i}");
+            //     $row->addSubheading(__('Parent/Guardian')." $i ".__('Other Information'));
 
-                while ($rowFields = $resultFields->fetch()) {
-                    $name = "parent{$i}custom".$rowFields['gibbonPersonFieldID'];
-                    $value = (isset($existingFields[$rowFields['gibbonPersonFieldID']]))? $existingFields[$rowFields['gibbonPersonFieldID']] : '';
+            //     while ($rowFields = $resultFields->fetch()) {
+            //         $name = "parent{$i}custom".$rowFields['gibbonPersonFieldID'];
+            //         $value = (isset($existingFields[$rowFields['gibbonPersonFieldID']]))? $existingFields[$rowFields['gibbonPersonFieldID']] : '';
 
-                    $row = $form->addRow()->setClass("parentSection{$i}");
-                        $row->addLabel($name, $rowFields['name'])->description($rowFields['description']);
-                        $row->addCustomField($name, $rowFields)->setValue($value);
-                }
-            }
+            //         $row = $form->addRow()->setClass("parentSection{$i}");
+            //             $row->addLabel($name, $rowFields['name'])->description($rowFields['description']);
+            //             $row->addCustomField($name, $rowFields)->setValue($value);
+            //     }
+            // }
         }
     } else {
         // LOGGED IN PARENT WITH FAMILY
@@ -705,57 +753,57 @@ if ($proceed == false) {
         }
     }
 
-    // SIBLINGS
-    $form->addRow()->addHeading(__('Siblings'))->append(__('Please give information on the applicants\'s siblings.'));
+    // // SIBLINGS
+    // $form->addRow()->addHeading(__('Siblings'))->append(__('Please give information on the applicants\'s siblings.'));
 
-    $table = $form->addRow()->addTable()->addClass('colorOddEven');
+    // $table = $form->addRow()->addTable()->addClass('colorOddEven');
 
-    $header = $table->addHeaderRow();
-    $header->addContent(__('Sibling Name'));
-    $header->addContent(__('Date of Birth'))->append('<br/><small>'.$_SESSION[$guid]['i18n']['dateFormat'].'</small>');
-    $header->addContent(__('School Attending'));
-    $header->addContent(__('Joining Date'))->append('<br/><small>'.$_SESSION[$guid]['i18n']['dateFormat'].'</small>');
+    // $header = $table->addHeaderRow();
+    // $header->addContent(__('Sibling Name'));
+    // $header->addContent(__('Date of Birth'))->append('<br/><small>'.$_SESSION[$guid]['i18n']['dateFormat'].'</small>');
+    // $header->addContent(__('School Attending'));
+    // $header->addContent(__('Joining Date'))->append('<br/><small>'.$_SESSION[$guid]['i18n']['dateFormat'].'</small>');
 
-    $rowCount = 1;
+    // $rowCount = 1;
 
-    // List siblings who have been to or are at the school
-    if (isset($gibbonFamilyID)) {
-        try {
-            $dataSibling = array('gibbonFamilyID' => $gibbonFamilyID);
-            $sqlSibling = 'SELECT surname, preferredName, dob, dateStart FROM gibbonFamilyChild JOIN gibbonPerson ON (gibbonFamilyChild.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE gibbonFamilyID=:gibbonFamilyID ORDER BY dob ASC, surname, preferredName';
-            $resultSibling = $connection2->prepare($sqlSibling);
-            $resultSibling->execute($dataSibling);
-        } catch (PDOException $e) {
-            echo "<div class='error'>".$e->getMessage().'</div>';
-        }
+    // // List siblings who have been to or are at the school
+    // if (isset($gibbonFamilyID)) {
+    //     try {
+    //         $dataSibling = array('gibbonFamilyID' => $gibbonFamilyID);
+    //         $sqlSibling = 'SELECT surname, preferredName, dob, dateStart FROM gibbonFamilyChild JOIN gibbonPerson ON (gibbonFamilyChild.gibbonPersonID=gibbonPerson.gibbonPersonID) WHERE gibbonFamilyID=:gibbonFamilyID ORDER BY dob ASC, surname, preferredName';
+    //         $resultSibling = $connection2->prepare($sqlSibling);
+    //         $resultSibling->execute($dataSibling);
+    //     } catch (PDOException $e) {
+    //         echo "<div class='error'>".$e->getMessage().'</div>';
+    //     }
 
-        while ($rowSibling = $resultSibling->fetch()) {
-            $name = Format::name('', $rowSibling['preferredName'], $rowSibling['surname'], 'Student');
+    //     while ($rowSibling = $resultSibling->fetch()) {
+    //         $name = Format::name('', $rowSibling['preferredName'], $rowSibling['surname'], 'Student');
 
-            $row = $table->addRow();
-            $row->addTextField('siblingName'.$rowCount)->maxLength(50)->setSize(26)->setValue($name);
-            $row->addDate('siblingDOB'.$rowCount)->setSize(10)->setValue(dateConvertBack($guid, $rowSibling['dob']));
-            $row->addTextField('siblingSchool'.$rowCount)->maxLength(50)->setSize(30)->setValue($_SESSION[$guid]['organisationName']);
-            $row->addDate('siblingSchoolJoiningDate'.$rowCount)->setSize(10)->setValue(dateConvertBack($guid, $rowSibling['dateStart']));
+    //         $row = $table->addRow();
+    //         $row->addTextField('siblingName'.$rowCount)->maxLength(50)->setSize(26)->setValue($name);
+    //         $row->addDate('siblingDOB'.$rowCount)->setSize(10)->setValue(dateConvertBack($guid, $rowSibling['dob']));
+    //         $row->addTextField('siblingSchool'.$rowCount)->maxLength(50)->setSize(30)->setValue($_SESSION[$guid]['organisationName']);
+    //         $row->addDate('siblingSchoolJoiningDate'.$rowCount)->setSize(10)->setValue(dateConvertBack($guid, $rowSibling['dateStart']));
 
-            $rowCount++;
-        }
-    }
+    //         $rowCount++;
+    //     }
+    // }
 
-    // Add additional sibling rows up to 3
-    for ($i = $rowCount; $i <= 3; ++$i) {
-        $row = $table->addRow();
-        $nameField = $row->addTextField('siblingName'.$i)->maxLength(50)->setSize(26);
-        $dobField = $row->addDate('siblingDOB'.$i)->setSize(10);
-        $row->addTextField('siblingSchool'.$i)->maxLength(50)->setSize(30);
-        $row->addDate('siblingSchoolJoiningDate'.$i)->setSize(10);
+    // // Add additional sibling rows up to 3
+    // for ($i = $rowCount; $i <= 3; ++$i) {
+    //     $row = $table->addRow();
+    //     $nameField = $row->addTextField('siblingName'.$i)->maxLength(50)->setSize(26);
+    //     $dobField = $row->addDate('siblingDOB'.$i)->setSize(10);
+    //     $row->addTextField('siblingSchool'.$i)->maxLength(50)->setSize(30);
+    //     $row->addDate('siblingSchoolJoiningDate'.$i)->setSize(10);
 
-        // Fill in some info from any sibling applications
-        if (!empty($linkedApplications[$i-1])) {
-            $nameField->setValue($linkedApplications[$i-1]['officialName']);
-            $dobField->setValue(dateConvertBack($guid, $linkedApplications[$i-1]['dob']));
-        }
-    }
+    //     // Fill in some info from any sibling applications
+    //     if (!empty($linkedApplications[$i-1])) {
+    //         $nameField->setValue($linkedApplications[$i-1]['officialName']);
+    //         $dobField->setValue(dateConvertBack($guid, $linkedApplications[$i-1]['dob']));
+    //     }
+    // }
 
     // LANGUAGE OPTIONS
     $languageOptionsActive = getSettingByScope($connection2, 'Application Form', 'languageOptionsActive');
@@ -882,7 +930,7 @@ if ($proceed == false) {
         $requiredDocumentsText = getSettingByScope($connection2, 'Application Form', 'requiredDocumentsText');
         $requiredDocumentsCompulsory = getSettingByScope($connection2, 'Application Form', 'requiredDocumentsCompulsory');
 
-        $heading = $form->addRow()->addHeading(__('Supporting Documents'));
+        $heading = $form->addRow()->addHeading(__('Supporting Documents'))->addClass('studentTypeVisibility');
 
         if (!empty($requiredDocumentsText)) {
             $heading->append($requiredDocumentsText);
@@ -902,7 +950,7 @@ if ($proceed == false) {
         for ($i = 0; $i < count($requiredDocumentsList); $i++) {
             $form->addHiddenValue('fileName'.$i, $requiredDocumentsList[$i]);
 
-            $row = $form->addRow();
+            $row = $form->addRow()->addClass('studentTypeVisibility');
                 $row->addLabel('file'.$i, $requiredDocumentsList[$i]);
                 $row->addFileUpload('file'.$i)
                     ->accepts($fileUploader->getFileExtensions())
@@ -910,7 +958,7 @@ if ($proceed == false) {
                     ->setMaxUpload(false);
         }
 
-        $row = $form->addRow()->addContent(getMaxUpload($guid));
+        $row = $form->addRow()->addClass('studentTypeVisibility')->addContent(getMaxUpload($guid));
         $form->addHiddenValue('fileCount', count($requiredDocumentsList));
     }
 
