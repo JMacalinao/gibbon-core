@@ -93,22 +93,22 @@ TODO: add template variable details.
                 </div>
 
                 {% block footer %}
-                <div class="relative bg-transparent-600 text-white text-center text-sm p-6 mb-10 leading-normal rounded-b">
-                    <span class="inline-block">
-                        {{ __('Powered by') }} <a class="link-white" target='_blank' href='https://gibbonedu.org'>Gibbon</a> {{ versionName }}</span> 
-                    <span class="inline-block">|  &#169; <a class="link-white" target='_blank' href='http://rossparker.org'>Ross Parker</a> 2010-{{ 'now'|date('Y') }}</span>
+                <div class="relative bg-transparent-600 text-white text-right text-sm p-6 mb-10 leading-normal rounded-b">
+                    <span class="inline-block">&#169; <a class="link-white" target='_blank' href='http://rossparker.org'>Ross Parker</a>, 
+                        <a class="link-white" href="http://www.haven.edu.ph">Haven Montessori, Inc.</a> 2010-{{ 'now'|date('Y') }}</span>
                     <br/>
 
                     <span class="text-xs">
+                        <a class="link-white" target='_blank' href='https://gibbonedu.org'>Gibbon</a> {{ versionName }} &bull; 
                         {{ __('Created under the') }} <a class="link-white" target='_blank' href='https://www.gnu.org/licenses/gpl.html'>GNU GPL</a> 
-                        at <a class="link-white" target='_blank' href='http://www.ichk.edu.hk'>ICHK</a> | 
-                        <a class="link-white" target='_blank' href='https://gibbonedu.org/about/#ourTeam'>{{ __('Credits') }}</a> | 
+                        at <a class="link-white" target='_blank' href='http://www.ichk.edu.hk'>ICHK</a> &bull; 
+                        <a class="link-white" target='_blank' href='https://gibbonedu.org/about/#ourTeam'>{{ __('Credits') }}</a> &bull; 
                         <a class="link-white" target='_blank' href='https://gibbonedu.org/about/#translators'>{{ __('Translators') }}</a>
                         <br/>
+                        Custom implementation maintained by <a class="link-white" target='_blank' href='mailto:ict[at]haven.edu.ph'>Haven ICT</a>
+                        <br />
                         {{ footerThemeAuthor }}<br/>
                     </span>
-
-                    <img class="absolute right-0 top-0 -mt-2 sm:mr-0 md:mr-12 opacity-75 hidden sm:block" alt="Logo Small" src="{{ absoluteURL }}/themes/{{ gibbonThemeName|default("Default") }}/img/logoFooter.png"/>
                 </div>
                 {% endblock %}
             </div>

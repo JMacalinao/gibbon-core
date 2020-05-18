@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //Basic variables
 $name = 'Default';
-$description = "Gibbon's 2015 look and feel.";
+$description = "Haven's Gibbon theme modified from Default.";
 $version = '1.0.00';
-$author = 'Ross Parker';
-$url = 'http://rossparker.org';
+$author = 'Ross Parker, JJ Macalinao';
+$url = 'http://www.haven.edu.ph';
 $responsive = 'N';
