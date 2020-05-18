@@ -5618,13 +5618,19 @@ CREATE TABLE `gibbonYearGroup` (
 --
 
 INSERT INTO `gibbonYearGroup` (`gibbonYearGroupID`, `name`, `nameShort`, `sequenceNumber`, `gibbonPersonIDHOY`) VALUES
-(001, 'Year 7', 'Y07', 1, NULL),
-(002, 'Year 8', 'Y08', 2, NULL),
-(003, 'Year 9', 'Y09', 3, NULL),
-(004, 'Year 10', 'Y10', 4, NULL),
-(005, 'Year 11', 'Y11', 5, NULL),
-(006, 'Year 12', 'Y12', 6, NULL),
-(007, 'Year 13', 'Y13', 7, NULL);
+(001, 'Nursery', 'P01', 1, NULL),
+(002, 'Kinder', 'P02', 2, NULL),
+(003, 'Prep', 'P03', 3, NULL),
+(004, 'Grade 1', 'G01', 4, NULL),
+(005, 'Grade 2', 'G02', 5, NULL),
+(006, 'Grade 3', 'G03', 6, NULL),
+(007, 'Grade 4', 'G04', 7, NULL),
+(008, 'Grade 5', 'G05', 8, NULL),
+(009, 'Grade 6', 'G06', 9, NULL),
+(010, 'Grade 7', 'G07', 10, NULL),
+(011, 'Grade 8', 'G08', 11, NULL),
+(012, 'Grade 9', 'G09', 12, NULL),
+(013, 'Grade 10', 'G10', 13, NULL);
 
 --
 -- Indexes for dumped tables
