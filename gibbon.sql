@@ -7822,3 +7822,17 @@ ALTER TABLE `gibbonYearGroup`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+/* Haven related default data */
+INSERT INTO `gibbonPersonField` VALUES 
+(001,'Middle Name','Y','Middle name as shown in ID documents.','varchar','60','Y',1,1,1,1,1,1,0),
+(002,'Student Type','Y','Type of student applying.','select','New Student/Transferee,Old Student','Y',1,0,0,0,1,1,0),
+(003,'City of Birth','Y',' ','varchar','255','Y',1,0,0,0,1,1,0),
+(004,'LRN','Y','Learners\' Reference Number','varchar','60','N',1,0,0,0,1,1,0);
+
+INSERT INTO `gibbonString` VALUES 
+(00000005,'County, State, District','Barangay/Village, City','Whole','N',0),
+(00000006,'Surname','Last Name','Whole','N',0),
+(00000007,'Year Group','Grade Level','Whole','N',0),
+(00000008,'Year Level','Grade Level','Whole','N',0),
+(00000009,'Please indicate any medical conditions.','Please indicate any medical conditions. Enter \"N/A\" if there are none.','Whole','N',0);
