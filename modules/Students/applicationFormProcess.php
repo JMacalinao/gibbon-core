@@ -541,6 +541,7 @@ if ($proceed == false) {
         } else {
             //DEAL WITH CUSTOM FIELDS
             $customRequireFail = false;
+            $customStudentType = '';
             //Prepare field values
             //CHILD
             $resultFields = getCustomFields($connection2, $guid, true, false, false, false, true, null);
@@ -548,6 +549,11 @@ if ($proceed == false) {
             if ($resultFields->rowCount() > 0) {
                 while ($rowFields = $resultFields->fetch()) {
                     if (isset($_POST['custom'.$rowFields['gibbonPersonFieldID']])) {
+                        // Get custom field: StudentType
+                        if ($rowFields['gibbonPersonFieldID'] == '002') {
+                            $customStudentType = $_POST['custom'.$rowFields['gibbonPersonFieldID']];
+                        }
+
                         if ($rowFields['type'] == 'date') {
                             $fields[$rowFields['gibbonPersonFieldID']] = dateConvert($guid, $_POST['custom'.$rowFields['gibbonPersonFieldID']]);
                         } else {
@@ -611,7 +617,7 @@ if ($proceed == false) {
             }
 
             if ($customRequireFail) {
-                $URL .= '&return=error1';
+                $URL .= '&return=error3';
                 header("Location: {$URL}");
                 exit();
             } else {
@@ -671,7 +677,7 @@ if ($proceed == false) {
 
                 //Deal with required documents
                 $requiredDocuments = getSettingByScope($connection2, 'Application Form', 'requiredDocuments');
-                if ($requiredDocuments != '' and $requiredDocuments != false) {
+                if ($requiredDocuments != '' and $requiredDocuments != false) {// && $customStudentType == 'New Student/Transferee') {
                     $fileCount = 0;
                     if (isset($_POST['fileCount'])) {
                         $fileCount = $_POST['fileCount'];
